@@ -96,5 +96,10 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="DB\DBLog.sql" />
+    <Content Include="DB\spDebugLogDelete.sql" />
+    <Content Include="DB\spDebugLogInsert.sql" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
