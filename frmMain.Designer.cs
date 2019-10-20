@@ -43,13 +43,11 @@
 			this.grpDBInfo = new System.Windows.Forms.GroupBox();
 			this.txtPassword = new System.Windows.Forms.TextBox();
 			this.txtUserName = new System.Windows.Forms.TextBox();
-			this.txtTableName = new System.Windows.Forms.TextBox();
 			this.txtDatabase = new System.Windows.Forms.TextBox();
 			this.txtDBServer = new System.Windows.Forms.TextBox();
 			this.lblPassword = new System.Windows.Forms.Label();
 			this.lblDBUserName = new System.Windows.Forms.Label();
 			this.chkUseWindowsAuthentication = new System.Windows.Forms.CheckBox();
-			this.lblTableName = new System.Windows.Forms.Label();
 			this.lblDatabase = new System.Windows.Forms.Label();
 			this.lblServer = new System.Windows.Forms.Label();
 			this.grpFileInfo = new System.Windows.Forms.GroupBox();
@@ -246,13 +244,11 @@
 			// 
 			this.grpDBInfo.Controls.Add(this.txtPassword);
 			this.grpDBInfo.Controls.Add(this.txtUserName);
-			this.grpDBInfo.Controls.Add(this.txtTableName);
 			this.grpDBInfo.Controls.Add(this.txtDatabase);
 			this.grpDBInfo.Controls.Add(this.txtDBServer);
 			this.grpDBInfo.Controls.Add(this.lblPassword);
 			this.grpDBInfo.Controls.Add(this.lblDBUserName);
 			this.grpDBInfo.Controls.Add(this.chkUseWindowsAuthentication);
-			this.grpDBInfo.Controls.Add(this.lblTableName);
 			this.grpDBInfo.Controls.Add(this.lblDatabase);
 			this.grpDBInfo.Controls.Add(this.lblServer);
 			this.grpDBInfo.Enabled = false;
@@ -270,7 +266,6 @@
 			this.txtPassword.PasswordChar = '*';
 			this.txtPassword.Size = new System.Drawing.Size(244, 21);
 			this.txtPassword.TabIndex = 10;
-			this.txtPassword.Text = "Logger4Me";
 			// 
 			// txtUserName
 			// 
@@ -278,15 +273,6 @@
 			this.txtUserName.Name = "txtUserName";
 			this.txtUserName.Size = new System.Drawing.Size(244, 21);
 			this.txtUserName.TabIndex = 9;
-			this.txtUserName.Text = "Logger";
-			// 
-			// txtTableName
-			// 
-			this.txtTableName.Location = new System.Drawing.Point(99, 70);
-			this.txtTableName.Name = "txtTableName";
-			this.txtTableName.Size = new System.Drawing.Size(244, 21);
-			this.txtTableName.TabIndex = 8;
-			this.txtTableName.Text = "DBLog";
 			// 
 			// txtDatabase
 			// 
@@ -294,7 +280,6 @@
 			this.txtDatabase.Name = "txtDatabase";
 			this.txtDatabase.Size = new System.Drawing.Size(244, 21);
 			this.txtDatabase.TabIndex = 7;
-			this.txtDatabase.Text = "Test";
 			// 
 			// txtDBServer
 			// 
@@ -302,7 +287,6 @@
 			this.txtDBServer.Name = "txtDBServer";
 			this.txtDBServer.Size = new System.Drawing.Size(244, 21);
 			this.txtDBServer.TabIndex = 6;
-			this.txtDBServer.Text = "JJONES-DEV";
 			// 
 			// lblPassword
 			// 
@@ -331,15 +315,6 @@
 			this.chkUseWindowsAuthentication.TabIndex = 3;
 			this.chkUseWindowsAuthentication.Text = "Use Windows Authentication";
 			this.chkUseWindowsAuthentication.UseVisualStyleBackColor = true;
-			// 
-			// lblTableName
-			// 
-			this.lblTableName.AutoSize = true;
-			this.lblTableName.Location = new System.Drawing.Point(9, 73);
-			this.lblTableName.Name = "lblTableName";
-			this.lblTableName.Size = new System.Drawing.Size(63, 13);
-			this.lblTableName.TabIndex = 2;
-			this.lblTableName.Text = "Table Name";
 			// 
 			// lblDatabase
 			// 
@@ -466,7 +441,6 @@
 			this.txtToAddresses.ScrollBars = System.Windows.Forms.ScrollBars.Both;
 			this.txtToAddresses.Size = new System.Drawing.Size(241, 87);
 			this.txtToAddresses.TabIndex = 14;
-			this.txtToAddresses.Text = "MSBassSinger@comcast.net\r\nPQQ2@cdc.gov";
 			// 
 			// lblToAddresses
 			// 
@@ -496,7 +470,6 @@
 			this.txtFromAddress.Name = "txtFromAddress";
 			this.txtFromAddress.Size = new System.Drawing.Size(152, 21);
 			this.txtFromAddress.TabIndex = 11;
-			this.txtFromAddress.Text = "MSBassSinger@comcast.net";
 			// 
 			// lblFromAddress
 			// 
@@ -513,7 +486,6 @@
 			this.txtReplyToAddress.Name = "txtReplyToAddress";
 			this.txtReplyToAddress.Size = new System.Drawing.Size(152, 21);
 			this.txtReplyToAddress.TabIndex = 9;
-			this.txtReplyToAddress.Text = "MSBassSinger@comcast.net";
 			// 
 			// lblReplyToAddress
 			// 
@@ -531,7 +503,6 @@
 			this.txtSMTPLogonPassword.PasswordChar = '*';
 			this.txtSMTPLogonPassword.Size = new System.Drawing.Size(146, 21);
 			this.txtSMTPLogonPassword.TabIndex = 7;
-			this.txtSMTPLogonPassword.Text = "Co11iezTheBest";
 			// 
 			// lblSMTPLogonPassword
 			// 
@@ -548,7 +519,6 @@
 			this.txtLogonEmail.Name = "txtLogonEmail";
 			this.txtLogonEmail.Size = new System.Drawing.Size(164, 21);
 			this.txtLogonEmail.TabIndex = 5;
-			this.txtLogonEmail.Text = "MSBassSinger@comcast.net";
 			// 
 			// lblLogon
 			// 
@@ -565,7 +535,6 @@
 			this.txtSMTPPort.Name = "txtSMTPPort";
 			this.txtSMTPPort.Size = new System.Drawing.Size(164, 21);
 			this.txtSMTPPort.TabIndex = 3;
-			this.txtSMTPPort.Text = "587";
 			// 
 			// lblSMTPPort
 			// 
@@ -582,7 +551,6 @@
 			this.txtSMTPServer.Name = "txtSMTPServer";
 			this.txtSMTPServer.Size = new System.Drawing.Size(164, 21);
 			this.txtSMTPServer.TabIndex = 1;
-			this.txtSMTPServer.Text = "smtp.comcast.net";
 			// 
 			// lblSMTPServer
 			// 
@@ -811,13 +779,11 @@
 		private System.Windows.Forms.GroupBox grpDBInfo;
 		private System.Windows.Forms.TextBox txtPassword;
 		private System.Windows.Forms.TextBox txtUserName;
-		private System.Windows.Forms.TextBox txtTableName;
 		private System.Windows.Forms.TextBox txtDatabase;
 		private System.Windows.Forms.TextBox txtDBServer;
 		private System.Windows.Forms.Label lblPassword;
 		private System.Windows.Forms.Label lblDBUserName;
 		private System.Windows.Forms.CheckBox chkUseWindowsAuthentication;
-		private System.Windows.Forms.Label lblTableName;
 		private System.Windows.Forms.Label lblDatabase;
 		private System.Windows.Forms.Label lblServer;
 		private System.Windows.Forms.GroupBox grpFileInfo;

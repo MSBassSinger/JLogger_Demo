@@ -36,7 +36,14 @@ namespace LoggingDemo
 								LOG_TYPE.SendEmail;
 
 			// Pick a folder for the file logs
-			String filePath = CommonHelpers.CurDir + @"\";
+			String filePath = Properties.Settings.Default.LogFolder;
+
+			if (filePath.Trim().Length == 0)
+			{
+				filePath = CommonHelpers.CurDir + @"\";
+				Properties.Settings.Default.LogFolder = filePath;
+				Properties.Settings.Default.Save();
+			}
 
 			// Provide ability to pick a path for the file logs.
 			dlgFolder.SelectedPath = filePath;
@@ -51,6 +58,36 @@ namespace LoggingDemo
 			// The file option is selected by default, so the 
 			// data entry for it is enabled.
 			grpFileInfo.Enabled = true;
+
+			txtDBServer.Text = Properties.Settings.Default.DBServer;
+			txtDatabase.Text = Properties.Settings.Default.Database;
+			chkUseWindowsAuthentication.Checked = Properties.Settings.Default.UseWindowsAuthentication;
+			txtUserName.Text = Properties.Settings.Default.DBUserName;
+			txtPassword.Text = Properties.Settings.Default.DBPassword;
+			txtSMTPServer.Text = Properties.Settings.Default.SMTPServer;
+			txtSMTPPort.Text = Properties.Settings.Default.SMTPPort.ToString();
+			txtLogonEmail.Text = Properties.Settings.Default.SMTPLogonName;
+			txtSMTPLogonPassword.Text = Properties.Settings.Default.SMTPLogonPassword;
+			txtReplyToAddress.Text = Properties.Settings.Default.ReplyToAddress;
+			txtFromAddress.Text = Properties.Settings.Default.FromAddress;
+
+			String sendTo = Properties.Settings.Default.SendToAddresses.Trim();
+
+			if (sendTo.Contains(";"))
+			{
+				sendTo = sendTo.Replace(";", Environment.NewLine);
+			}
+
+			if (sendTo.Contains(","))
+			{
+				sendTo = sendTo.Replace(",", Environment.NewLine);
+			}
+
+			txtToAddresses.Text = sendTo;
+
+			txtLogFolder.Text = Properties.Settings.Default.LogFolder;
+			txtPrefix.Text = Properties.Settings.Default.LogNamePrefix;
+
 
 		}
 
@@ -123,6 +160,36 @@ namespace LoggingDemo
 
 			Boolean response = false;
 
+			Properties.Settings.Default.DBServer = txtDBServer.Text.Trim();
+			Properties.Settings.Default.Database = txtDatabase.Text.Trim();
+			Properties.Settings.Default.UseWindowsAuthentication = chkUseWindowsAuthentication.Checked;
+			Properties.Settings.Default.DBUserName = txtUserName.Text.Trim();
+			Properties.Settings.Default.DBPassword = txtPassword.Text.Trim();
+			Properties.Settings.Default.SMTPServer = txtSMTPServer.Text.Trim();
+			Properties.Settings.Default.SMTPPort = txtSMTPPort.Text.Trim().GetInt32(587);
+			Properties.Settings.Default.SMTPLogonName = txtLogonEmail.Text.Trim();
+			Properties.Settings.Default.SMTPLogonPassword = txtSMTPLogonPassword.Text.Trim();
+			Properties.Settings.Default.ReplyToAddress = txtReplyToAddress.Text.Trim();
+			Properties.Settings.Default.FromAddress = txtFromAddress.Text.Trim();
+
+			String sendTo = txtToAddresses.Text.Trim();
+
+			if (sendTo.Contains(";"))
+			{
+				sendTo = sendTo.Replace(";", Environment.NewLine);
+			}
+
+			if (sendTo.Contains(","))
+			{
+				sendTo = sendTo.Replace(",", Environment.NewLine);
+			}
+
+			Properties.Settings.Default.SendToAddresses = sendTo;	
+			Properties.Settings.Default.LogFolder = txtLogFolder.Text.Trim();
+			Properties.Settings.Default.LogNamePrefix = txtPrefix.Text.Trim();
+			Properties.Settings.Default.Save();
+
+
 			// Get the values for the test.
 			String filePath = txtLogFolder.Text.Trim();
 			String fileNamePrefix = txtPrefix.Text.Trim();
@@ -139,7 +206,6 @@ namespace LoggingDemo
 				Boolean useWindowsAuth = chkUseWindowsAuthentication.Checked;
 				String dbUserName = txtUserName.Text.Trim();
 				String dbPassword = txtPassword.Text.Trim();
-				String dbLogName = txtTableName.Text.Trim();
 
 				// Set the db configuration.  Because it is a singleton,
 				// the instance does not have to be explicitly instantiated.
