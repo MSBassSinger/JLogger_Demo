@@ -38,8 +38,8 @@
     <Reference Include="JHelpers, Version=1.0.1.0, Culture=neutral, PublicKeyToken=6d5fb1f2678f6520, processorArchitecture=MSIL">
       <HintPath>packages\Jeff.Jones.JHelpers.1.0.1\lib\netstandard2.0\JHelpers.dll</HintPath>
     </Reference>
-    <Reference Include="JLogger, Version=1.1.0.0, Culture=neutral, PublicKeyToken=6d5fb1f2678f6520, processorArchitecture=MSIL">
-      <HintPath>packages\Jeff.Jones.JLogger.1.1.0\lib\netstandard2.0\JLogger.dll</HintPath>
+    <Reference Include="JLogger, Version=1.1.1.0, Culture=neutral, PublicKeyToken=6d5fb1f2678f6520, processorArchitecture=MSIL">
+      <HintPath>packages\Jeff.Jones.JLogger.1.1.1\lib\netstandard2.0\JLogger.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

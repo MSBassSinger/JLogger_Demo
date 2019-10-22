@@ -10,6 +10,63 @@ using System.Windows.Forms;
 using Jeff.Jones.JLogger;
 using Jeff.Jones.JHelpers;
 
+//// Template code for a method that implements granular logging
+//private void SomeMethod(Int32 someVariable)
+//{
+
+//	DateTime methodStart = DateTime.Now;
+
+//	// Note that the Logger call is not made unless the bit used for the WriteDebugLog
+//	// is on on the m_DebugLogOptions bitmask.  That allows bits to be turned on and off
+//	// during operation to adjust what is logged.  No code changes needed to increase or decrease
+//	// logging.
+//	if ((m_DebugLogOptions & LOG_TYPE.Flow) == LOG_TYPE.Flow)
+//	{
+//		Logger.Instance.WriteDebugLog(LOG_TYPE.Flow, "1st line in method");
+//	}
+
+//	// Declare method-level variables here
+
+//	try
+//	{
+//		// Do your work here
+//	}  // END try
+//	catch (Exception exUnhandled)
+//	{
+//		// I always use a generic catch last if I use multiple catches so I can catch anything that
+//		// I did not anticipate
+//		exUnhandled.Data.Add("someVariable", someVariable);
+
+//		if ((m_DebugLogOptions & LOG_TYPE.Error) == LOG_TYPE.Error)
+//		{
+//			Logger.Instance.WriteDebugLog(LOG_TYPE.Error & LOG_TYPE.SendEmail,
+//											exUnhandled,
+//											"Optional Specific message if desired");
+//		}
+
+//	}  // END catch (Exception exUnhandled)
+//	finally
+//	{
+//		// I had no method-level resources here, but if I did, this is how I normally handle them.
+//		// BEGIN dispose of method-level resources here =====================================
+//		// if (dac != null)
+//		//   {
+//		//     dac.Dispose();
+//		//     dac = null;
+//		//   }
+//		// END dispose of method-level resources here =======================================
+
+//		if ((m_DebugLogOptions & LOG_TYPE.Performance) == LOG_TYPE.Performance)
+//		{
+//			TimeSpan elapsedTime = DateTime.Now - methodStart;
+
+//			Logger.Instance.WriteDebugLog(LOG_TYPE.Performance,
+//											$"END; elapsed time = [{elapsedTime,0:mm} mins, {elapsedTime,0:ss} secs, {elapsedTime:fff} msecs].",
+//											elapsedTime.TotalMilliseconds.ToString());
+//		}
+//	}  // END finally
+
+//}  // END private void SomeMethod(Int32 someVariable)
 
 namespace LoggingDemo
 {
@@ -92,7 +149,7 @@ namespace LoggingDemo
 		}
 
 		/// <summary>
-		/// If the email bit is choen, then enable the data entry for sending email.
+		/// If the email bit is chosen, then enable the data entry for sending email.
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
@@ -364,7 +421,7 @@ namespace LoggingDemo
 			}
 			finally
 			{
-				// I had no method-leel resources here, but if I did, this is how I normally handle them.
+				// I had no method-level resources here, but if I did, this is how I normally handle them.
 				// BEGIN dispose of method-level resources here =====================================
 				// if (dac != null)
 				//   {
