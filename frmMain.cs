@@ -11,6 +11,8 @@ using Jeff.Jones.JLogger;
 using Jeff.Jones.JHelpers;
 
 //// Template code for a method that implements granular logging
+//// This does not how the optional parameters new to version 1.0.2.
+//// The optional parameters are shown in the code for this demo project, however.
 //private void SomeMethod(Int32 someVariable)
 //{
 
@@ -20,9 +22,9 @@ using Jeff.Jones.JHelpers;
 //	// is on on the m_DebugLogOptions bitmask.  That allows bits to be turned on and off
 //	// during operation to adjust what is logged.  No code changes needed to increase or decrease
 //	// logging.
-//	if ((m_DebugLogOptions & LOG_TYPE.Flow) == LOG_TYPE.Flow)
+//	if ((m_DebugLogOptions & LOG_TYPES.Flow) == LOG_TYPES.Flow)
 //	{
-//		Logger.Instance.WriteDebugLog(LOG_TYPE.Flow, "1st line in method");
+//		Logger.Instance.WriteDebugLog(LOG_TYPES.Flow, "1st line in method");
 //	}
 
 //	// Declare method-level variables here
@@ -37,9 +39,9 @@ using Jeff.Jones.JHelpers;
 //		// I did not anticipate
 //		exUnhandled.Data.Add("someVariable", someVariable);
 
-//		if ((m_DebugLogOptions & LOG_TYPE.Error) == LOG_TYPE.Error)
+//		if ((m_DebugLogOptions & LOG_TYPES.Error) == LOG_TYPES.Error)
 //		{
-//			Logger.Instance.WriteDebugLog(LOG_TYPE.Error & LOG_TYPE.SendEmail,
+//			Logger.Instance.WriteDebugLog(LOG_TYPES.Error & LOG_TYPES.SendEmail,
 //											exUnhandled,
 //											"Optional Specific message if desired");
 //		}
@@ -56,11 +58,11 @@ using Jeff.Jones.JHelpers;
 //		//   }
 //		// END dispose of method-level resources here =======================================
 
-//		if ((m_DebugLogOptions & LOG_TYPE.Performance) == LOG_TYPE.Performance)
+//		if ((m_DebugLogOptions & LOG_TYPES.Performance) == LOG_TYPES.Performance)
 //		{
 //			TimeSpan elapsedTime = DateTime.Now - methodStart;
 
-//			Logger.Instance.WriteDebugLog(LOG_TYPE.Performance,
+//			Logger.Instance.WriteDebugLog(LOG_TYPES.Performance,
 //											$"END; elapsed time = [{elapsedTime,0:mm} mins, {elapsedTime,0:ss} secs, {elapsedTime:fff} msecs].",
 //											elapsedTime.TotalMilliseconds.ToString());
 //		}
@@ -73,7 +75,10 @@ namespace LoggingDemo
 	public partial class frmMain : Form
 	{
 
-		private LOG_TYPE m_DebugLogOptions = LOG_TYPE.Unspecified;
+		private LOG_TYPES m_DebugLogOptions = LOG_TYPES.Unspecified;
+
+		private UserDefinedLogFieldsList m_UDFFields = null;
+
 
 		/// <summary>
 		/// Construct the main form for the demo
@@ -83,14 +88,13 @@ namespace LoggingDemo
 			InitializeComponent();
 
 			// Setup logger options here
-			m_DebugLogOptions = LOG_TYPE.Error |
-								LOG_TYPE.Informational |
-								LOG_TYPE.ShowTimeOnly |
-								LOG_TYPE.Warning |
-								LOG_TYPE.HideThreadID |
-								LOG_TYPE.ShowModuleMethodAndLineNumber |
-								LOG_TYPE.System |
-								LOG_TYPE.SendEmail;
+			m_DebugLogOptions = LOG_TYPES.Error |
+								LOG_TYPES.Informational |
+								LOG_TYPES.ShowTimeOnly |
+								LOG_TYPES.Warning |
+								LOG_TYPES.ShowModuleMethodAndLineNumber |
+								LOG_TYPES.System |
+								LOG_TYPES.SendEmail;
 
 			// Pick a folder for the file logs
 			String filePath = Properties.Settings.Default.LogFolder;
@@ -127,6 +131,7 @@ namespace LoggingDemo
 			txtSMTPLogonPassword.Text = Properties.Settings.Default.SMTPLogonPassword;
 			txtReplyToAddress.Text = Properties.Settings.Default.ReplyToAddress;
 			txtFromAddress.Text = Properties.Settings.Default.FromAddress;
+			txtEntityName.Text = Properties.Settings.Default.EntityName;
 
 			String sendTo = Properties.Settings.Default.SendToAddresses.Trim();
 
@@ -228,6 +233,7 @@ namespace LoggingDemo
 			Properties.Settings.Default.SMTPLogonPassword = txtSMTPLogonPassword.Text.Trim();
 			Properties.Settings.Default.ReplyToAddress = txtReplyToAddress.Text.Trim();
 			Properties.Settings.Default.FromAddress = txtFromAddress.Text.Trim();
+			Properties.Settings.Default.EntityName = txtEntityName.Text.Trim();
 
 			String sendTo = txtToAddresses.Text.Trim();
 
@@ -246,6 +252,26 @@ namespace LoggingDemo
 			Properties.Settings.Default.LogNamePrefix = txtPrefix.Text.Trim();
 			Properties.Settings.Default.Save();
 
+			if (m_UDFFields != null)
+			{
+				m_UDFFields.Clear();
+
+				m_UDFFields = null;
+			}
+
+			if (lstUDF.Items.Count > 0)
+			{
+				m_UDFFields = new UserDefinedLogFieldsList();
+
+				foreach (var item in lstUDF.Items)
+				{
+					m_UDFFields.Add(item.ToString());
+				}
+			}
+			else
+			{
+				m_UDFFields = null;
+			}
 
 			// Get the values for the test.
 			String filePath = txtLogFolder.Text.Trim();
@@ -271,10 +297,12 @@ namespace LoggingDemo
 																dbUserName,
 																dbPassword,
 																useWindowsAuth,
-																true,
 																dbDatabase,
 																daysToRetainLogs,
-																m_DebugLogOptions);
+																m_DebugLogOptions,
+																m_UDFFields,
+																txtEntityName.Text,
+																lblAuditTable.Visible);
 
 			}
 			else
@@ -286,7 +314,9 @@ namespace LoggingDemo
 										  fileNamePrefix,
 										  daysToRetainLogs,
 										  m_DebugLogOptions,
-										  "");
+										  "",
+										  m_UDFFields,
+										  txtEntityName.Text);
 
 
 			}
@@ -344,21 +374,61 @@ namespace LoggingDemo
 		private void TestMethod(Int32 counter)
 		{
 
+
+
 			DateTime methodStart = DateTime.Now;
+
+			UserDefinedFieldValues udfValues = null;
+
+			if (m_UDFFields != null)
+			{
+				if (m_UDFFields.Count > 0)
+				{
+					udfValues = new UserDefinedFieldValues();
+
+					foreach (String udfField in m_UDFFields)
+					{
+						udfValues.Add(udfField, $"Sample value for {udfField}.");
+					}
+				}
+			}
+
+			String auditUserName = "";
+			String auditWorkstation = "";
+			if (lblAuditTable.Visible)
+			{
+				auditUserName = Environment.UserDomainName + @"\" + Environment.UserName;
+				auditWorkstation = Environment.MachineName;
+			}
 
 			// Note that the Logger call is not made unless the bit used for the WriteDebugLog
 			// is on on the m_DebugLogOptions bitmask.  That allows bits to be turned on and off
 			// during operation to adjust what is logged.  No code changes needed to increase or decrease
 			// logging.
-			if ((m_DebugLogOptions & LOG_TYPE.Flow) == LOG_TYPE.Flow)
+			if ((m_DebugLogOptions & LOG_TYPES.Flow) == LOG_TYPES.Flow)
 			{
+
 				if (counter == 1)
 				{
-					Logger.Instance.WriteDebugLog(LOG_TYPE.Flow | LOG_TYPE.SendEmail, "1st line in method");
+					Logger.Instance.WriteDebugLog(LOG_TYPES.Flow | LOG_TYPES.SendEmail, 
+					                              "1st line in method",
+												  "",
+												  udfValues,
+												  "",
+												  Environment.MachineName,
+												  auditUserName,
+												  auditWorkstation);
 				}
 				else
 				{
-					Logger.Instance.WriteDebugLog(LOG_TYPE.Flow, "1st line in method");
+					Logger.Instance.WriteDebugLog(LOG_TYPES.Flow, 
+												  "1st line in method",
+												  "",
+												  udfValues,
+												  "",
+												  Environment.MachineName,
+												  auditUserName,
+												  auditWorkstation);
 				}
 			}
 
@@ -367,23 +437,44 @@ namespace LoggingDemo
 				// A simple divide-by-zero exception is created and logged.
 				Int32 x = 100;
 
-				if ((m_DebugLogOptions & LOG_TYPE.Test) == LOG_TYPE.Test)
+				if ((m_DebugLogOptions & LOG_TYPES.Test) == LOG_TYPES.Test)
 				{
-					Logger.Instance.WriteDebugLog(LOG_TYPE.Test, "Test Message", "More info here");
+					Logger.Instance.WriteDebugLog(LOG_TYPES.Test, 
+					                             "Test Message", 
+												 "More info here",
+												  udfValues,
+												  "",
+												  Environment.MachineName,
+												  auditUserName,
+												  auditWorkstation);
 				}
 
 				Int32 y = 5 - 5;
 
-				if ((m_DebugLogOptions & LOG_TYPE.System) == LOG_TYPE.System)
+				if ((m_DebugLogOptions & LOG_TYPES.System) == LOG_TYPES.System)
 				{
-					Logger.Instance.WriteDebugLog(LOG_TYPE.System, "TickCount", Environment.TickCount.ToString());
+					Logger.Instance.WriteDebugLog(LOG_TYPES.System, 
+					                              "TickCount", 
+												  Environment.TickCount.ToString(),
+												  udfValues,
+												  "",
+												  Environment.MachineName,
+												  auditUserName,
+												  auditWorkstation);
 				}
 
 				Double Z = x / y;
 
-				if ((m_DebugLogOptions & LOG_TYPE.Cloud) == LOG_TYPE.Cloud)
+				if ((m_DebugLogOptions & LOG_TYPES.Cloud) == LOG_TYPES.Cloud)
 				{
-					Logger.Instance.WriteDebugLog(LOG_TYPE.Cloud, "Cloud Message", $"Task Counter value = {counter.ToString()}");
+					Logger.Instance.WriteDebugLog(LOG_TYPES.Cloud, 
+					                              "Cloud Message", 
+												  $"Task Counter value = {counter.ToString()}",
+												  udfValues,
+												  "",
+												  Environment.MachineName,
+												  auditUserName,
+												  auditWorkstation);
 				}
 
 			}
@@ -393,15 +484,29 @@ namespace LoggingDemo
 				exDiv.Data.Add("x", 100);
 				exDiv.Data.Add("y", 0);
 
-				if ((m_DebugLogOptions & LOG_TYPE.Error) == LOG_TYPE.Error)
+				if ((m_DebugLogOptions & LOG_TYPES.Error) == LOG_TYPES.Error)
 				{
 					if (counter == 1)
 					{
-						Logger.Instance.WriteDebugLog(LOG_TYPE.Error | LOG_TYPE.SendEmail, exDiv, "Division by zero was intentional");
+						Logger.Instance.WriteDebugLog(LOG_TYPES.Error | LOG_TYPES.SendEmail,
+													  exDiv,
+													  "Division by zero was intentional",
+													  udfValues,
+													  "",
+													  Environment.MachineName,
+													  auditUserName,
+													  auditWorkstation);
 					}
 					else
 					{
-						Logger.Instance.WriteDebugLog(LOG_TYPE.Error, exDiv, "Division by zero was intentional");
+						Logger.Instance.WriteDebugLog(LOG_TYPES.Error, 
+														exDiv, 
+														"Division by zero was intentional",
+														udfValues,
+														"",
+														Environment.MachineName,
+														auditUserName,
+														auditWorkstation);
 					}
 				}
 
@@ -413,9 +518,16 @@ namespace LoggingDemo
 				exUnhandled.Data.Add("x", 100);
 				exUnhandled.Data.Add("y", 0);
 
-				if ((m_DebugLogOptions & LOG_TYPE.Error) == LOG_TYPE.Error)
+				if ((m_DebugLogOptions & LOG_TYPES.Error) == LOG_TYPES.Error)
 				{
-					Logger.Instance.WriteDebugLog(LOG_TYPE.Error & LOG_TYPE.SendEmail, exUnhandled, "Division by zero was intentional");
+					Logger.Instance.WriteDebugLog(LOG_TYPES.Error & LOG_TYPES.SendEmail, 
+					                              exUnhandled, 
+												  "Division by zero was intentional",
+												  udfValues,
+												  "",
+												  Environment.MachineName,
+												  auditUserName,
+												  auditWorkstation);
 				}
 
 			}
@@ -430,13 +542,18 @@ namespace LoggingDemo
 				//   }
 				// END dispose of method-level resources here =======================================
 				
-				if ((m_DebugLogOptions & LOG_TYPE.Performance) == LOG_TYPE.Performance)
+				if ((m_DebugLogOptions & LOG_TYPES.Performance) == LOG_TYPES.Performance)
 				{
 					TimeSpan elapsedTime = DateTime.Now - methodStart;
 
-					Logger.Instance.WriteDebugLog(LOG_TYPE.Performance,
-													$"END; elapsed time = [{elapsedTime,0:mm} mins, {elapsedTime,0:ss} secs, {elapsedTime:fff} msecs].",
-													elapsedTime.TotalMilliseconds.ToString());
+					Logger.Instance.WriteDebugLog(LOG_TYPES.Performance,
+												  $"END; elapsed time = [{elapsedTime,0:mm} mins, {elapsedTime,0:ss} secs, {elapsedTime:fff} msecs].",
+												  elapsedTime.TotalMilliseconds.ToString(),
+												  udfValues,
+												  "",
+												  Environment.MachineName,
+												  auditUserName,
+												  auditWorkstation);
 				}
 			}
 
@@ -448,111 +565,111 @@ namespace LoggingDemo
 		private void GetDebugLogOptions()
 		{
 
-			m_DebugLogOptions = LOG_TYPE.Unspecified;
+			m_DebugLogOptions = LOG_TYPES.Unspecified;
 
 			if (chkFlow.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.Flow;
+				m_DebugLogOptions |= LOG_TYPES.Flow;
 			}
 
 			if (chkError.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.Error;
+				m_DebugLogOptions |= LOG_TYPES.Error;
 			}
 
 			if (chkInformational.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.Informational;
+				m_DebugLogOptions |= LOG_TYPES.Informational;
 			}
 
 			if (chkWarning.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.Warning;
+				m_DebugLogOptions |= LOG_TYPES.Warning;
 			}
 
 			if (chkSystem.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.System;
+				m_DebugLogOptions |= LOG_TYPES.System;
 			}
 
 			if (chkPerformance.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.Performance;
+				m_DebugLogOptions |= LOG_TYPES.Performance;
 			}
 
 			if (chkTest.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.Test;
+				m_DebugLogOptions |= LOG_TYPES.Test;
 			}
 
 			if (chkEnableEmail.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.SendEmail;
+				m_DebugLogOptions |= LOG_TYPES.SendEmail;
 			}
 
 			if (chkDatabase.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.Database;
+				m_DebugLogOptions |= LOG_TYPES.Database;
 			}
 
 			if (chkService.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.Service;
+				m_DebugLogOptions |= LOG_TYPES.Service;
 			}
 
 			if (chkCloud.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.Cloud;
+				m_DebugLogOptions |= LOG_TYPES.Cloud;
 			}
 
 			if (chkManagement.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.Management;
+				m_DebugLogOptions |= LOG_TYPES.Management;
 			}
 
 			if (chkFatal.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.Fatal;
+				m_DebugLogOptions |= LOG_TYPES.Fatal;
 			}
 
 			if (chkNetwork.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.Network;
+				m_DebugLogOptions |= LOG_TYPES.Network;
 			}
 
 			if (chkThreat.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.Threat;
+				m_DebugLogOptions |= LOG_TYPES.Threat;
 			}
 
 			if (chkIncludeMethod.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.ShowModuleMethodAndLineNumber;
+				m_DebugLogOptions |= LOG_TYPES.ShowModuleMethodAndLineNumber;
 			}
 
 			if (chkTimeOnly.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.ShowTimeOnly;
+				m_DebugLogOptions |= LOG_TYPES.ShowTimeOnly;
 			}
 
 			if (chkFlow.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.Flow;
+				m_DebugLogOptions |= LOG_TYPES.Flow;
 			}
 
 			if (chkHideThreadID.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.HideThreadID;
+				m_DebugLogOptions |= LOG_TYPES.HideThreadID;
 			}
 
 			if (chkIncludeStackTrace.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.IncludeStackTrace;
+				m_DebugLogOptions |= LOG_TYPES.IncludeStackTrace;
 			}
 
 			if (chkIncludeExceptionData.Checked)
 			{
-				m_DebugLogOptions |= LOG_TYPE.IncludeExceptionData;
+				m_DebugLogOptions |= LOG_TYPES.IncludeExceptionData;
 			}
 
 			Logger.Instance.DebugLogOptions = m_DebugLogOptions;
@@ -575,6 +692,100 @@ namespace LoggingDemo
 
 		}
 
+		private void btnValidateDB_Click(object sender, EventArgs e)
+		{
+
+			DataAccessLayer dac = null;
+
+
+			try
+			{
+
+				String DBServer = txtDBServer.Text.Trim();
+				String Database = txtDatabase.Text.Trim();
+				Boolean UseWindowsAuthentication = chkUseWindowsAuthentication.Checked;
+				String DBUserName = txtUserName.Text.Trim();
+				String DBPassword = txtPassword.Text.Trim();
+
+				dac = new DataAccessLayer(DBServer,
+										  Database,
+										  UseWindowsAuthentication,
+										  DBUserName,
+										  DBPassword,
+										  10,
+										  10);
+
+				Boolean isAudit = false;
+
+				Boolean connOK = dac.CheckConnection(out isAudit);
+
+				lblDBOK.Visible = true;
+
+				if (connOK)
+				{
+					lblDBOK.BackColor = Color.Green;
+				}
+				else
+				{
+					lblDBOK.BackColor = Color.Red;
+				}
+
+				lblAuditTable.Visible = true;
+
+				if (isAudit)
+				{
+					lblAuditTable.Text = "Audit Table Present";
+				}
+				else
+				{
+					lblAuditTable.Text = "No Audit Table";
+				}
+
+
+			}
+			catch (Exception exUnhandled)
+			{
+				lblDBOK.BackColor = Color.Red;
+				lblAuditTable.Visible = false;
+				MessageBox.Show(this, $"Error in DataAccessLayer{Environment.NewLine}{exUnhandled.GetFullExceptionMessage(false, false)}", "Database Connection Issue");
+			}
+			finally
+			{
+				dac = null;
+			}
+
+		}
+
+		private void btnUDFAdd_Click(object sender, EventArgs e)
+		{
+			if (txtUDF.Text.Trim().Length > 0)
+			{
+				if (!lstUDF.Items.Contains(txtUDF.Text.Trim()))
+				{
+					lstUDF.Items.Add(txtUDF.Text.Trim());
+				}
+
+				txtUDF.Text = "";
+			}
+		}
+
+		private void btnUDFRemove_Click(object sender, EventArgs e)
+		{
+			if (lstUDF.Items.Count > 0)
+			{
+				List<String> toRemove = new List<String>();
+
+				foreach (String item in lstUDF.SelectedItems)
+				{
+					toRemove.Add(item);
+				}
+
+				foreach (String item in toRemove)
+				{
+					lstUDF.Items.Remove(item);
+				}
+			}
+		}
 	}  // public partial class frmMain : Form
 
 }  // END namespace LoggingDemo

@@ -12,7 +12,8 @@ Description:
 Revision History:
 ----------------------
 10-01-2019	JDJ	Creation.
-
+05-24-2020  JDJ Added UserDefinedData, EntityName, and Device parameters
+07-06-2020  JDJ Renamed
 *******************************************************************************/
 
 IF EXISTS (SELECT name FROM dbo.sysobjects WHERE name = 'spDebugLogInsert')
@@ -34,7 +35,14 @@ CREATE PROCEDURE [dbo].[spDebugLogInsert]
 	@ExceptionData		nvarchar(MAX), 
 	@StackData			nvarchar(MAX), 
 	@RowsAffected       INT = 0 OUTPUT,
-	@ErrMessage         NVARCHAR(255) = '' OUTPUT	)
+	@ErrMessage         NVARCHAR(255) = '' OUTPUT,
+	@UserDefinedData    nvarchar(MAX) = '', 
+	@EntityName         nvarchar(50) = '',
+	@Device             nvarchar(50) = '',
+	@AuditUserName      VARCHAR (64), 
+    @AuditWorkstation   VARCHAR (255), 
+    @WhenInsertedOUT    DATETIME OUTPUT
+	)
 AS
 BEGIN
 
@@ -54,6 +62,7 @@ BEGIN
 	DECLARE @throwMsg varchar(2048)
 	SET @ErrNum = 0
 	SET @ErrMessage = ''
+	SET @WhenInsertedOUT = GETDATE();
 
 
 	BEGIN TRY
@@ -65,12 +74,15 @@ BEGIN
 			[LogDateTime], 
 			[LogMessage], 
 			[DetailMessage], 
+			[EntityName],
+			[Device],
 			[ModuleName], 
 			[MethodName], 
 			[LineNumber], 
 			[ThreadID], 
 			[ExceptionData], 
-			[StackData]
+			[StackData],
+			[UserDefinedData]
 		)
 		VALUES
 		(
@@ -78,17 +90,63 @@ BEGIN
 			@LogDateTime, 
 			@LogMessage, 
 			@DetailMessage, 
+			@EntityName,
+			@Device,
 			@ModuleName, 
 			@MethodName, 
 			@LineNumber, 
 			@ThreadID, 
 			@ExceptionData, 
-			@StackData
+			@StackData,
+			@UserDefinedData
 		)
 
 		SET @ID = SCOPE_IDENTITY();
 
 		SET @NumRows = @@ROWCOUNT;
+
+		INSERT INTO [dbo].[DBLogAudit]
+        (
+            [AuditType],
+            [AuditWhen],
+            [AuditUserName],
+            [AuditWorkStation],
+            [OrigID],
+            [OrigLogType],
+            [OrigLogDateTime],
+            [OrigLogMessage],
+            [OrigDetailMessage],
+			[OrigEntityName],
+			[OrigDevice],
+            [OrigModuleName],
+            [OrigMethodName],
+            [OrigLineNumber],
+            [OrigThreadID],
+            [OrigExceptionData],
+            [OrigStackData],
+			[OrigUserDefinedData]
+        )
+        VALUES
+        (
+           'I0',
+           @WhenInsertedOUT,
+           @AuditUserName,
+           @AuditWorkstation,
+           @ID,
+           @LogType,
+           @LogDateTime,
+           @LogMessage,
+           @DetailMessage,
+		   @EntityName,
+		   @Device,
+           @ModuleName,
+           @MethodName,
+           @LineNumber,
+           @ThreadID,
+           @ExceptionData,
+           @StackData,
+		   @UserDefinedData
+        )
 
 		SET @RowsAffected = @NumRows;
 

@@ -41,6 +41,9 @@
 			this.chkTimeOnly = new System.Windows.Forms.CheckBox();
 			this.chkIncludeMethod = new System.Windows.Forms.CheckBox();
 			this.grpDBInfo = new System.Windows.Forms.GroupBox();
+			this.lblAuditTable = new System.Windows.Forms.Label();
+			this.lblDBOK = new System.Windows.Forms.Label();
+			this.btnValidateDB = new System.Windows.Forms.Button();
 			this.txtPassword = new System.Windows.Forms.TextBox();
 			this.txtUserName = new System.Windows.Forms.TextBox();
 			this.txtDatabase = new System.Windows.Forms.TextBox();
@@ -89,6 +92,14 @@
 			this.chkNetwork = new System.Windows.Forms.CheckBox();
 			this.chkFatal = new System.Windows.Forms.CheckBox();
 			this.grpLogOptions = new System.Windows.Forms.GroupBox();
+			this.grpUDF = new System.Windows.Forms.GroupBox();
+			this.txtUDF = new System.Windows.Forms.TextBox();
+			this.lstUDF = new System.Windows.Forms.ListBox();
+			this.btnUDFAdd = new System.Windows.Forms.Button();
+			this.btnUDFRemove = new System.Windows.Forms.Button();
+			this.grpOther = new System.Windows.Forms.GroupBox();
+			this.lblEntityName = new System.Windows.Forms.Label();
+			this.txtEntityName = new System.Windows.Forms.TextBox();
 			this.grpDestination.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numDaysToRetain)).BeginInit();
 			this.grpLogConfig.SuspendLayout();
@@ -96,6 +107,8 @@
 			this.grpFileInfo.SuspendLayout();
 			this.grpEmailInfo.SuspendLayout();
 			this.grpLogOptions.SuspendLayout();
+			this.grpUDF.SuspendLayout();
+			this.grpOther.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// grpDestination
@@ -164,7 +177,7 @@
 			this.grpLogConfig.Controls.Add(this.chkIncludeStackTrace);
 			this.grpLogConfig.Controls.Add(this.chkTimeOnly);
 			this.grpLogConfig.Controls.Add(this.chkIncludeMethod);
-			this.grpLogConfig.Location = new System.Drawing.Point(19, 138);
+			this.grpLogConfig.Location = new System.Drawing.Point(19, 128);
 			this.grpLogConfig.Name = "grpLogConfig";
 			this.grpLogConfig.Size = new System.Drawing.Size(357, 172);
 			this.grpLogConfig.TabIndex = 2;
@@ -242,6 +255,9 @@
 			// 
 			// grpDBInfo
 			// 
+			this.grpDBInfo.Controls.Add(this.lblAuditTable);
+			this.grpDBInfo.Controls.Add(this.lblDBOK);
+			this.grpDBInfo.Controls.Add(this.btnValidateDB);
 			this.grpDBInfo.Controls.Add(this.txtPassword);
 			this.grpDBInfo.Controls.Add(this.txtUserName);
 			this.grpDBInfo.Controls.Add(this.txtDatabase);
@@ -252,16 +268,48 @@
 			this.grpDBInfo.Controls.Add(this.lblDatabase);
 			this.grpDBInfo.Controls.Add(this.lblServer);
 			this.grpDBInfo.Enabled = false;
-			this.grpDBInfo.Location = new System.Drawing.Point(19, 316);
+			this.grpDBInfo.Location = new System.Drawing.Point(19, 306);
 			this.grpDBInfo.Name = "grpDBInfo";
-			this.grpDBInfo.Size = new System.Drawing.Size(357, 185);
+			this.grpDBInfo.Size = new System.Drawing.Size(357, 195);
 			this.grpDBInfo.TabIndex = 3;
 			this.grpDBInfo.TabStop = false;
 			this.grpDBInfo.Text = "Database Info";
 			// 
+			// lblAuditTable
+			// 
+			this.lblAuditTable.BackColor = System.Drawing.SystemColors.Control;
+			this.lblAuditTable.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.lblAuditTable.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblAuditTable.Location = new System.Drawing.Point(188, 158);
+			this.lblAuditTable.Name = "lblAuditTable";
+			this.lblAuditTable.Size = new System.Drawing.Size(155, 21);
+			this.lblAuditTable.TabIndex = 14;
+			this.lblAuditTable.Text = "No Audit Table";
+			this.lblAuditTable.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.lblAuditTable.Visible = false;
+			// 
+			// lblDBOK
+			// 
+			this.lblDBOK.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.lblDBOK.Location = new System.Drawing.Point(147, 158);
+			this.lblDBOK.Name = "lblDBOK";
+			this.lblDBOK.Size = new System.Drawing.Size(35, 21);
+			this.lblDBOK.TabIndex = 13;
+			this.lblDBOK.Visible = false;
+			// 
+			// btnValidateDB
+			// 
+			this.btnValidateDB.Location = new System.Drawing.Point(9, 158);
+			this.btnValidateDB.Name = "btnValidateDB";
+			this.btnValidateDB.Size = new System.Drawing.Size(132, 21);
+			this.btnValidateDB.TabIndex = 11;
+			this.btnValidateDB.Text = "Validate DB Connection";
+			this.btnValidateDB.UseVisualStyleBackColor = true;
+			this.btnValidateDB.Click += new System.EventHandler(this.btnValidateDB_Click);
+			// 
 			// txtPassword
 			// 
-			this.txtPassword.Location = new System.Drawing.Point(99, 148);
+			this.txtPassword.Location = new System.Drawing.Point(99, 121);
 			this.txtPassword.Name = "txtPassword";
 			this.txtPassword.PasswordChar = '*';
 			this.txtPassword.Size = new System.Drawing.Size(244, 21);
@@ -269,7 +317,7 @@
 			// 
 			// txtUserName
 			// 
-			this.txtUserName.Location = new System.Drawing.Point(99, 121);
+			this.txtUserName.Location = new System.Drawing.Point(99, 94);
 			this.txtUserName.Name = "txtUserName";
 			this.txtUserName.Size = new System.Drawing.Size(244, 21);
 			this.txtUserName.TabIndex = 9;
@@ -291,7 +339,7 @@
 			// lblPassword
 			// 
 			this.lblPassword.AutoSize = true;
-			this.lblPassword.Location = new System.Drawing.Point(9, 151);
+			this.lblPassword.Location = new System.Drawing.Point(9, 124);
 			this.lblPassword.Name = "lblPassword";
 			this.lblPassword.Size = new System.Drawing.Size(53, 13);
 			this.lblPassword.TabIndex = 5;
@@ -300,7 +348,7 @@
 			// lblDBUserName
 			// 
 			this.lblDBUserName.AutoSize = true;
-			this.lblDBUserName.Location = new System.Drawing.Point(9, 124);
+			this.lblDBUserName.Location = new System.Drawing.Point(9, 97);
 			this.lblDBUserName.Name = "lblDBUserName";
 			this.lblDBUserName.Size = new System.Drawing.Size(59, 13);
 			this.lblDBUserName.TabIndex = 4;
@@ -309,7 +357,7 @@
 			// chkUseWindowsAuthentication
 			// 
 			this.chkUseWindowsAuthentication.AutoSize = true;
-			this.chkUseWindowsAuthentication.Location = new System.Drawing.Point(17, 99);
+			this.chkUseWindowsAuthentication.Location = new System.Drawing.Point(11, 72);
 			this.chkUseWindowsAuthentication.Name = "chkUseWindowsAuthentication";
 			this.chkUseWindowsAuthentication.Size = new System.Drawing.Size(163, 17);
 			this.chkUseWindowsAuthentication.TabIndex = 3;
@@ -341,9 +389,9 @@
 			this.grpFileInfo.Controls.Add(this.btnFolder);
 			this.grpFileInfo.Controls.Add(this.txtLogFolder);
 			this.grpFileInfo.Controls.Add(this.lblLogFolder);
-			this.grpFileInfo.Location = new System.Drawing.Point(413, 393);
+			this.grpFileInfo.Location = new System.Drawing.Point(402, 393);
 			this.grpFileInfo.Name = "grpFileInfo";
-			this.grpFileInfo.Size = new System.Drawing.Size(417, 108);
+			this.grpFileInfo.Size = new System.Drawing.Size(614, 108);
 			this.grpFileInfo.TabIndex = 4;
 			this.grpFileInfo.TabStop = false;
 			this.grpFileInfo.Text = "Log File Info";
@@ -368,7 +416,7 @@
 			// btnFolder
 			// 
 			this.btnFolder.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnFolder.Location = new System.Drawing.Point(360, 18);
+			this.btnFolder.Location = new System.Drawing.Point(559, 18);
 			this.btnFolder.Name = "btnFolder";
 			this.btnFolder.Size = new System.Drawing.Size(47, 29);
 			this.btnFolder.TabIndex = 2;
@@ -380,7 +428,7 @@
 			// 
 			this.txtLogFolder.Location = new System.Drawing.Point(80, 23);
 			this.txtLogFolder.Name = "txtLogFolder";
-			this.txtLogFolder.Size = new System.Drawing.Size(274, 21);
+			this.txtLogFolder.Size = new System.Drawing.Size(473, 21);
 			this.txtLogFolder.TabIndex = 1;
 			// 
 			// lblLogFolder
@@ -400,9 +448,9 @@
 			// 
 			// btnRunTest
 			// 
-			this.btnRunTest.Location = new System.Drawing.Point(578, 25);
+			this.btnRunTest.Location = new System.Drawing.Point(763, 25);
 			this.btnRunTest.Name = "btnRunTest";
-			this.btnRunTest.Size = new System.Drawing.Size(226, 33);
+			this.btnRunTest.Size = new System.Drawing.Size(247, 33);
 			this.btnRunTest.TabIndex = 5;
 			this.btnRunTest.Text = "&Run Test";
 			this.btnRunTest.UseVisualStyleBackColor = true;
@@ -425,7 +473,7 @@
 			this.grpEmailInfo.Controls.Add(this.lblSMTPPort);
 			this.grpEmailInfo.Controls.Add(this.txtSMTPServer);
 			this.grpEmailInfo.Controls.Add(this.lblSMTPServer);
-			this.grpEmailInfo.Location = new System.Drawing.Point(569, 64);
+			this.grpEmailInfo.Location = new System.Drawing.Point(754, 64);
 			this.grpEmailInfo.Name = "grpEmailInfo";
 			this.grpEmailInfo.Size = new System.Drawing.Size(262, 320);
 			this.grpEmailInfo.TabIndex = 6;
@@ -439,7 +487,7 @@
 			this.txtToAddresses.Multiline = true;
 			this.txtToAddresses.Name = "txtToAddresses";
 			this.txtToAddresses.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-			this.txtToAddresses.Size = new System.Drawing.Size(241, 87);
+			this.txtToAddresses.Size = new System.Drawing.Size(246, 87);
 			this.txtToAddresses.TabIndex = 14;
 			// 
 			// lblToAddresses
@@ -501,7 +549,7 @@
 			this.txtSMTPLogonPassword.Location = new System.Drawing.Point(104, 99);
 			this.txtSMTPLogonPassword.Name = "txtSMTPLogonPassword";
 			this.txtSMTPLogonPassword.PasswordChar = '*';
-			this.txtSMTPLogonPassword.Size = new System.Drawing.Size(146, 21);
+			this.txtSMTPLogonPassword.Size = new System.Drawing.Size(152, 21);
 			this.txtSMTPLogonPassword.TabIndex = 7;
 			// 
 			// lblSMTPLogonPassword
@@ -517,7 +565,7 @@
 			// 
 			this.txtLogonEmail.Location = new System.Drawing.Point(86, 74);
 			this.txtLogonEmail.Name = "txtLogonEmail";
-			this.txtLogonEmail.Size = new System.Drawing.Size(164, 21);
+			this.txtLogonEmail.Size = new System.Drawing.Size(170, 21);
 			this.txtLogonEmail.TabIndex = 5;
 			// 
 			// lblLogon
@@ -531,7 +579,7 @@
 			// 
 			// txtSMTPPort
 			// 
-			this.txtSMTPPort.Location = new System.Drawing.Point(86, 46);
+			this.txtSMTPPort.Location = new System.Drawing.Point(92, 46);
 			this.txtSMTPPort.Name = "txtSMTPPort";
 			this.txtSMTPPort.Size = new System.Drawing.Size(164, 21);
 			this.txtSMTPPort.TabIndex = 3;
@@ -549,7 +597,7 @@
 			// 
 			this.txtSMTPServer.Location = new System.Drawing.Point(86, 17);
 			this.txtSMTPServer.Name = "txtSMTPServer";
-			this.txtSMTPServer.Size = new System.Drawing.Size(164, 21);
+			this.txtSMTPServer.Size = new System.Drawing.Size(170, 21);
 			this.txtSMTPServer.TabIndex = 1;
 			// 
 			// lblSMTPServer
@@ -732,11 +780,90 @@
 			this.grpLogOptions.TabStop = false;
 			this.grpLogOptions.Text = "Log Options";
 			// 
+			// grpUDF
+			// 
+			this.grpUDF.Controls.Add(this.btnUDFRemove);
+			this.grpUDF.Controls.Add(this.btnUDFAdd);
+			this.grpUDF.Controls.Add(this.lstUDF);
+			this.grpUDF.Controls.Add(this.txtUDF);
+			this.grpUDF.Location = new System.Drawing.Point(546, 28);
+			this.grpUDF.Name = "grpUDF";
+			this.grpUDF.Size = new System.Drawing.Size(202, 281);
+			this.grpUDF.TabIndex = 7;
+			this.grpUDF.TabStop = false;
+			this.grpUDF.Text = "User Defined Fields";
+			// 
+			// txtUDF
+			// 
+			this.txtUDF.Location = new System.Drawing.Point(7, 21);
+			this.txtUDF.Name = "txtUDF";
+			this.txtUDF.Size = new System.Drawing.Size(142, 21);
+			this.txtUDF.TabIndex = 0;
+			// 
+			// lstUDF
+			// 
+			this.lstUDF.FormattingEnabled = true;
+			this.lstUDF.Location = new System.Drawing.Point(8, 46);
+			this.lstUDF.Name = "lstUDF";
+			this.lstUDF.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.lstUDF.Size = new System.Drawing.Size(141, 225);
+			this.lstUDF.Sorted = true;
+			this.lstUDF.TabIndex = 1;
+			// 
+			// btnUDFAdd
+			// 
+			this.btnUDFAdd.Location = new System.Drawing.Point(157, 20);
+			this.btnUDFAdd.Name = "btnUDFAdd";
+			this.btnUDFAdd.Size = new System.Drawing.Size(33, 21);
+			this.btnUDFAdd.TabIndex = 2;
+			this.btnUDFAdd.Text = "+";
+			this.btnUDFAdd.UseVisualStyleBackColor = true;
+			this.btnUDFAdd.Click += new System.EventHandler(this.btnUDFAdd_Click);
+			// 
+			// btnUDFRemove
+			// 
+			this.btnUDFRemove.Location = new System.Drawing.Point(157, 46);
+			this.btnUDFRemove.Name = "btnUDFRemove";
+			this.btnUDFRemove.Size = new System.Drawing.Size(33, 22);
+			this.btnUDFRemove.TabIndex = 3;
+			this.btnUDFRemove.Text = "-";
+			this.btnUDFRemove.UseVisualStyleBackColor = true;
+			this.btnUDFRemove.Click += new System.EventHandler(this.btnUDFRemove_Click);
+			// 
+			// grpOther
+			// 
+			this.grpOther.Controls.Add(this.txtEntityName);
+			this.grpOther.Controls.Add(this.lblEntityName);
+			this.grpOther.Location = new System.Drawing.Point(548, 315);
+			this.grpOther.Name = "grpOther";
+			this.grpOther.Size = new System.Drawing.Size(199, 68);
+			this.grpOther.TabIndex = 8;
+			this.grpOther.TabStop = false;
+			this.grpOther.Text = "Other Info";
+			// 
+			// lblEntityName
+			// 
+			this.lblEntityName.AutoSize = true;
+			this.lblEntityName.Location = new System.Drawing.Point(5, 17);
+			this.lblEntityName.Name = "lblEntityName";
+			this.lblEntityName.Size = new System.Drawing.Size(65, 13);
+			this.lblEntityName.TabIndex = 0;
+			this.lblEntityName.Text = "Entity Name";
+			// 
+			// txtEntityName
+			// 
+			this.txtEntityName.Location = new System.Drawing.Point(6, 33);
+			this.txtEntityName.Name = "txtEntityName";
+			this.txtEntityName.Size = new System.Drawing.Size(182, 21);
+			this.txtEntityName.TabIndex = 1;
+			// 
 			// frmMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(843, 506);
+			this.ClientSize = new System.Drawing.Size(1031, 528);
+			this.Controls.Add(this.grpOther);
+			this.Controls.Add(this.grpUDF);
 			this.Controls.Add(this.grpEmailInfo);
 			this.Controls.Add(this.btnRunTest);
 			this.Controls.Add(this.grpFileInfo);
@@ -760,6 +887,10 @@
 			this.grpEmailInfo.PerformLayout();
 			this.grpLogOptions.ResumeLayout(false);
 			this.grpLogOptions.PerformLayout();
+			this.grpUDF.ResumeLayout(false);
+			this.grpUDF.PerformLayout();
+			this.grpOther.ResumeLayout(false);
+			this.grpOther.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -827,6 +958,17 @@
 		private System.Windows.Forms.CheckBox chkNetwork;
 		private System.Windows.Forms.CheckBox chkFatal;
 		private System.Windows.Forms.GroupBox grpLogOptions;
+		private System.Windows.Forms.Button btnValidateDB;
+		private System.Windows.Forms.Label lblDBOK;
+		private System.Windows.Forms.Label lblAuditTable;
+		private System.Windows.Forms.GroupBox grpUDF;
+		private System.Windows.Forms.Button btnUDFRemove;
+		private System.Windows.Forms.Button btnUDFAdd;
+		private System.Windows.Forms.ListBox lstUDF;
+		private System.Windows.Forms.TextBox txtUDF;
+		private System.Windows.Forms.GroupBox grpOther;
+		private System.Windows.Forms.Label lblEntityName;
+		private System.Windows.Forms.TextBox txtEntityName;
 	}
 }
 

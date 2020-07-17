@@ -7,7 +7,7 @@ This SP deletes log records older than a given date.
 
 When       Who What
 ========== === ================================================================================================================
-10/02/2019 JDJ Genesis
+07/06/2020 JDJ Genesis
 
 
 
@@ -17,7 +17,6 @@ When       Who What
 IF EXISTS (SELECT name FROM dbo.sysobjects WHERE name = 'spDebugLogDelete')
 	DROP PROCEDURE spDebugLogDelete
 GO 
-
 
 CREATE PROCEDURE [dbo].[spDebugLogDelete]
 (

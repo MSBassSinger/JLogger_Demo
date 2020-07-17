@@ -2,7 +2,7 @@
 When       Who What
 ========== === ================================================================================================================
 10/01/2019 JDJ Genesis
-
+05/24/2020 JDJ Added UserDefinedData, EntityName, and Device fields.
 
 ******************************************************************************************************************************/
 
@@ -19,12 +19,15 @@ IF NOT EXISTS(SELECT name FROM dbo.sysobjects WHERE name = 'DBLog')
 			[LogDateTime] [datetime] NOT NULL,
 			[LogMessage] [nvarchar](max) NOT NULL,
 			[DetailMessage] [nvarchar](max) NOT NULL,
+			[EntityName] [nvarchar](50) NOT NULL,
+			[Device] [nvarchar](50) NOT NULL,
 			[ModuleName] [nvarchar](max) NOT NULL,
 			[MethodName] [nvarchar](max) NOT NULL,
 			[LineNumber] [int] NOT NULL,
 			[ThreadID] [int] NOT NULL,
 			[ExceptionData] [nvarchar](max) NOT NULL,
 			[StackData] [nvarchar](max) NOT NULL,
+			[UserDefinedData] [nvarchar](max) NOT NULL
 		 CONSTRAINT [PK_DBLog] PRIMARY KEY CLUSTERED 
 		(
 			[ID] ASC
@@ -48,6 +51,12 @@ IF NOT EXISTS(SELECT name FROM dbo.sysobjects WHERE name = 'DBLog')
 		ALTER TABLE [dbo].[DBLog] ADD  CONSTRAINT [DF_DBLog_ExceptionData]  DEFAULT ('') FOR [ExceptionData]
 
 		ALTER TABLE [dbo].[DBLog] ADD  CONSTRAINT [DF_DBLog_StackData]  DEFAULT ('') FOR [StackData]
+
+		ALTER TABLE [dbo].[DBLog] ADD  CONSTRAINT [DF_DBLog_UserDefinedData]  DEFAULT ('') FOR [UserDefinedData]
+
+		ALTER TABLE [dbo].[DBLog] ADD  CONSTRAINT [DF_DBLog_EntityName]  DEFAULT ('') FOR [EntityName]
+
+		ALTER TABLE [dbo].[DBLog] ADD  CONSTRAINT [DF_DBLog_Device]  DEFAULT ('') FOR [Device]
 
 	END
 
