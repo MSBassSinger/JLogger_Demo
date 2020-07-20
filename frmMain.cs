@@ -72,13 +72,22 @@ using Jeff.Jones.JHelpers;
 
 namespace LoggingDemo
 {
+	/// <summary>
+	/// The main form for inputting data to test.
+	/// </summary>
 	public partial class frmMain : Form
 	{
-
+		/// <summary>
+		/// The debug log bitset for what logging features are on off.
+		/// </summary>
 		private LOG_TYPES m_DebugLogOptions = LOG_TYPES.Unspecified;
 
+		/// <summary>
+		/// Object to hold the names of user-defined fields (if provided)
+		/// </summary>
 		private UserDefinedLogFieldsList m_UDFFields = null;
 
+		private String m_EntityName = "Log Testing, Inc.";
 
 		/// <summary>
 		/// Construct the main form for the demo
@@ -96,9 +105,10 @@ namespace LoggingDemo
 								LOG_TYPES.System |
 								LOG_TYPES.SendEmail;
 
-			// Pick a folder for the file logs
+			// Read the folder setting for the file logs
 			String filePath = Properties.Settings.Default.LogFolder;
 
+			// If no setting, use the current folder as a default
 			if (filePath.Trim().Length == 0)
 			{
 				filePath = CommonHelpers.CurDir + @"\";
@@ -120,6 +130,7 @@ namespace LoggingDemo
 			// data entry for it is enabled.
 			grpFileInfo.Enabled = true;
 
+			// Read in the rest of the settings to the display component.
 			txtDBServer.Text = Properties.Settings.Default.DBServer;
 			txtDatabase.Text = Properties.Settings.Default.Database;
 			chkUseWindowsAuthentication.Checked = Properties.Settings.Default.UseWindowsAuthentication;
@@ -135,6 +146,7 @@ namespace LoggingDemo
 
 			String sendTo = Properties.Settings.Default.SendToAddresses.Trim();
 
+			// Make the display of the "To address" one per line.
 			if (sendTo.Contains(";"))
 			{
 				sendTo = sendTo.Replace(";", Environment.NewLine);
@@ -222,6 +234,7 @@ namespace LoggingDemo
 
 			Boolean response = false;
 
+			// Save the user input to the settings.
 			Properties.Settings.Default.DBServer = txtDBServer.Text.Trim();
 			Properties.Settings.Default.Database = txtDatabase.Text.Trim();
 			Properties.Settings.Default.UseWindowsAuthentication = chkUseWindowsAuthentication.Checked;
@@ -252,6 +265,7 @@ namespace LoggingDemo
 			Properties.Settings.Default.LogNamePrefix = txtPrefix.Text.Trim();
 			Properties.Settings.Default.Save();
 
+			// Get the user input (if any) about the user defined fields
 			if (m_UDFFields != null)
 			{
 				m_UDFFields.Clear();
@@ -292,7 +306,10 @@ namespace LoggingDemo
 
 				// Set the db configuration.  Because it is a singleton,
 				// the instance does not have to be explicitly instantiated.
-				// Just set the configs needed, and start the log.
+				// Just set the configs needed, and start the log as shown below.
+				// An "entity name" can be used to differentiate an oprganization or
+				// function related to the log entry.  This sets the default entity name.
+				// and each log write allows a different entity name.
 				response = Logger.Instance.SetDBConfiguration(dbServer,
 																dbUserName,
 																dbPassword,
@@ -309,7 +326,10 @@ namespace LoggingDemo
 			{
 				// Set the log file configuration.  Because it is a singleton,
 				// the instance does not have to be explicitly instantiated.
-				// Just set the configs needed, and start the log.
+				// Just set the configs needed, and start the log as shown below.
+				// An "entity name" can be used to differentiate an oprganization or
+				// function related to the log entry.  This sets the default entity name.
+				// and each log write allows a different entity name.
 				response = Logger.Instance.SetLogData(filePath,
 										  fileNamePrefix,
 										  daysToRetainLogs,
@@ -352,6 +372,7 @@ namespace LoggingDemo
 			Logger.Instance.StartLog();
 
 			// For the demo, we simulate multithreaded use with the Parallel.For
+			//  The log will show the difference ThreadIDs used.
 			Parallel.For(1, 101, i =>
 			{
 				TestMethod(i);
@@ -374,9 +395,17 @@ namespace LoggingDemo
 		private void TestMethod(Int32 counter)
 		{
 
-
-
 			DateTime methodStart = DateTime.Now;
+
+			Logger.Instance.WriteDebugLog(LOG_TYPES.Flow,
+										  "1st line in method",
+										  "",
+										  null,
+										  m_EntityName,
+										  Environment.MachineName,
+										  Environment.UserName,
+										  Environment.MachineName);
+
 
 			UserDefinedFieldValues udfValues = null;
 
@@ -386,6 +415,7 @@ namespace LoggingDemo
 				{
 					udfValues = new UserDefinedFieldValues();
 
+					// To keep it simple, just make up a value for each UDF.
 					foreach (String udfField in m_UDFFields)
 					{
 						udfValues.Add(udfField, $"Sample value for {udfField}.");
@@ -393,6 +423,9 @@ namespace LoggingDemo
 				}
 			}
 
+			// auditUserName and auditWorkstation are optional, and only used when usong the 
+			// DB option, and then only when using the DB schema with the audit log DB (DBLogAudit)
+			// enabled.
 			String auditUserName = "";
 			String auditWorkstation = "";
 			if (lblAuditTable.Visible)
@@ -404,17 +437,18 @@ namespace LoggingDemo
 			// Note that the Logger call is not made unless the bit used for the WriteDebugLog
 			// is on on the m_DebugLogOptions bitmask.  That allows bits to be turned on and off
 			// during operation to adjust what is logged.  No code changes needed to increase or decrease
-			// logging.
+			// logging.  By checking the bit (a low resource, fast check), we save the method call
+			// overhead for when the entry would not be logged.
 			if ((m_DebugLogOptions & LOG_TYPES.Flow) == LOG_TYPES.Flow)
 			{
-
+				// For demo purposes, send an email only for the first log entry.
 				if (counter == 1)
 				{
 					Logger.Instance.WriteDebugLog(LOG_TYPES.Flow | LOG_TYPES.SendEmail, 
 					                              "1st line in method",
 												  "",
 												  udfValues,
-												  "",
+												  m_EntityName,
 												  Environment.MachineName,
 												  auditUserName,
 												  auditWorkstation);
@@ -425,7 +459,7 @@ namespace LoggingDemo
 												  "1st line in method",
 												  "",
 												  udfValues,
-												  "",
+												  m_EntityName,
 												  Environment.MachineName,
 												  auditUserName,
 												  auditWorkstation);
@@ -443,7 +477,7 @@ namespace LoggingDemo
 					                             "Test Message", 
 												 "More info here",
 												  udfValues,
-												  "",
+												  m_EntityName,
 												  Environment.MachineName,
 												  auditUserName,
 												  auditWorkstation);
@@ -457,7 +491,7 @@ namespace LoggingDemo
 					                              "TickCount", 
 												  Environment.TickCount.ToString(),
 												  udfValues,
-												  "",
+												  m_EntityName,
 												  Environment.MachineName,
 												  auditUserName,
 												  auditWorkstation);
@@ -471,7 +505,7 @@ namespace LoggingDemo
 					                              "Cloud Message", 
 												  $"Task Counter value = {counter.ToString()}",
 												  udfValues,
-												  "",
+												  m_EntityName,
 												  Environment.MachineName,
 												  auditUserName,
 												  auditWorkstation);
@@ -486,13 +520,14 @@ namespace LoggingDemo
 
 				if ((m_DebugLogOptions & LOG_TYPES.Error) == LOG_TYPES.Error)
 				{
+					// For demo purposes, send an email only for the first log entry.
 					if (counter == 1)
 					{
 						Logger.Instance.WriteDebugLog(LOG_TYPES.Error | LOG_TYPES.SendEmail,
 													  exDiv,
 													  "Division by zero was intentional",
 													  udfValues,
-													  "",
+													  m_EntityName,
 													  Environment.MachineName,
 													  auditUserName,
 													  auditWorkstation);
@@ -503,7 +538,7 @@ namespace LoggingDemo
 														exDiv, 
 														"Division by zero was intentional",
 														udfValues,
-														"",
+														m_EntityName,
 														Environment.MachineName,
 														auditUserName,
 														auditWorkstation);
@@ -524,7 +559,7 @@ namespace LoggingDemo
 					                              exUnhandled, 
 												  "Division by zero was intentional",
 												  udfValues,
-												  "",
+												  m_EntityName,
 												  Environment.MachineName,
 												  auditUserName,
 												  auditWorkstation);
@@ -550,7 +585,7 @@ namespace LoggingDemo
 												  $"END; elapsed time = [{elapsedTime,0:mm} mins, {elapsedTime,0:ss} secs, {elapsedTime:fff} msecs].",
 												  elapsedTime.TotalMilliseconds.ToString(),
 												  udfValues,
-												  "",
+												  m_EntityName,
 												  Environment.MachineName,
 												  auditUserName,
 												  auditWorkstation);
@@ -692,21 +727,28 @@ namespace LoggingDemo
 
 		}
 
+		/// <summary>
+		/// Method called by the button to validate the DB exists, can be connected to, and whether or 
+		/// not the DBLogAudit table is present.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void btnValidateDB_Click(object sender, EventArgs e)
 		{
 
 			DataAccessLayer dac = null;
 
-
 			try
 			{
-
+				// Read the DB-related user input.
 				String DBServer = txtDBServer.Text.Trim();
 				String Database = txtDatabase.Text.Trim();
 				Boolean UseWindowsAuthentication = chkUseWindowsAuthentication.Checked;
 				String DBUserName = txtUserName.Text.Trim();
 				String DBPassword = txtPassword.Text.Trim();
 
+				// Create an instance of a generic data access layer just for this 
+				// logger demo.
 				dac = new DataAccessLayer(DBServer,
 										  Database,
 										  UseWindowsAuthentication,
@@ -715,10 +757,14 @@ namespace LoggingDemo
 										  10,
 										  10);
 
+				// Assume the DBLogAudit table does not exist until we know it does.
 				Boolean isAudit = false;
 
+				// Make sure the DB connection works.
 				Boolean connOK = dac.CheckConnection(out isAudit);
 
+				// Update the indicators to show if the DB connection worked or not 
+				// and if the 
 				lblDBOK.Visible = true;
 
 				if (connOK)
@@ -745,17 +791,24 @@ namespace LoggingDemo
 			}
 			catch (Exception exUnhandled)
 			{
+				// Catch and display any errors in this method.
 				lblDBOK.BackColor = Color.Red;
 				lblAuditTable.Visible = false;
 				MessageBox.Show(this, $"Error in DataAccessLayer{Environment.NewLine}{exUnhandled.GetFullExceptionMessage(false, false)}", "Database Connection Issue");
 			}
 			finally
 			{
+				// Do what Momma taught you - clean up after yourself. :)
 				dac = null;
 			}
 
 		}
 
+		/// <summary>
+		/// Method for button to add a text string as a UDF field.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void btnUDFAdd_Click(object sender, EventArgs e)
 		{
 			if (txtUDF.Text.Trim().Length > 0)
@@ -769,6 +822,11 @@ namespace LoggingDemo
 			}
 		}
 
+		/// <summary>
+		/// Method for button to remove a text string as a UDF field.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void btnUDFRemove_Click(object sender, EventArgs e)
 		{
 			if (lstUDF.Items.Count > 0)

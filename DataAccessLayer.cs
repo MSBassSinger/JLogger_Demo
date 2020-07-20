@@ -13,6 +13,7 @@ namespace LoggingDemo
 	/// </summary>
 	internal class DataAccessLayer
 	{
+		// Placeholders for constructor parameters.
 		private readonly String m_Server = "";
 		private readonly String m_DefaultDB = "";
 		private readonly Boolean m_UseAuthentication = false;
@@ -20,7 +21,7 @@ namespace LoggingDemo
 		private readonly String m_Password = "";
 		private readonly Int32 m_ConnectionTimeout = 10;
 		private readonly Int32 m_CommandTimeout = 20;
-		private Int32 m_PortNumber = 1433;
+		private readonly Int32 m_PortNumber = 1433;
 		private readonly Int32 m_ConnectRetryCount = 3;
 		private readonly Int32 m_ConnectRetryInterval = 10;
 		private readonly String m_ApplicationName = "";
@@ -30,19 +31,19 @@ namespace LoggingDemo
 		/// <summary>
 		/// Constructor to populate the instance.
 		/// </summary>
-		/// <param name="server"></param>
-		/// <param name="defaultDB"></param>
-		/// <param name="useAuthentication"></param>
-		/// <param name="username"></param>
-		/// <param name="password"></param>
-		/// <param name="connectionTimeout"></param>
-		/// <param name="commandTimeout"></param>
-		/// <param name="connectRetryCount"></param>
-		/// <param name="connectRetryInterval"></param>
-		/// <param name="applicationName"></param>
-		/// <param name="workstationID"></param>
-		/// <param name="portNumber"></param>
-		/// <param name="connectionPooling"></param>
+		/// <param name="server">The SQL Server instance name.</param>
+		/// <param name="defaultDB">The database name to use.</param>
+		/// <param name="useAuthentication">True if windows authentication, false if SQL Server authentication.</param>
+		/// <param name="username">If using SQL Server authentication, provide the login name.  Otherwise, use ""</param>
+		/// <param name="password">If using SQL Server authentication, provide the password.  Otherwise, use ""</param>
+		/// <param name="connectionTimeout">Time in milliseconds for a connection to timeout.</param>
+		/// <param name="commandTimeout">Time in milliseconds for a command to timeout.</param>
+		/// <param name="connectRetryCount">(Optional) How many times to try to reconnect before throwing an exception.</param>
+		/// <param name="connectRetryInterval">(Optional) How long, in milliseconds, to wait between connection retries.</param>
+		/// <param name="applicationName">(Optional) Application name to use in the SQL connection string.</param>
+		/// <param name="workstationID">(Optional) name of the workstation to use in the SQL connection string.</param>
+		/// <param name="portNumber">(Optional) port number to use for SQL Server listening, if different than the default.</param>
+		/// <param name="connectionPooling">(Optional) true to use connection pooling (recommended), false if not.</param>
 		public DataAccessLayer(String server,
 							   String defaultDB,
 							   Boolean useAuthentication,
@@ -92,12 +93,9 @@ namespace LoggingDemo
 
 			try
 			{
-				if (m_PortNumber <= 0)
-				{
-					m_PortNumber = 1433;
-				}
 
-				string server;
+				String server;
+
 				if (m_PortNumber != 1433)
 				{
 					server = m_Server + ":" + m_PortNumber.ToString(CultureInfo.CurrentCulture);
@@ -180,6 +178,7 @@ namespace LoggingDemo
 					String dbCheck = $"USE {m_DefaultDB}; SELECT name FROM sys.Objects WHERE  Object_id = OBJECT_ID(N'dbo.DBLogAudit') AND Type = N'U'";
 
 					SqlCommand cmd = sqlConn.CreateCommand();
+
 					cmd.CommandText = dbCheck;
 					cmd.CommandType = CommandType.Text;
 					Object result = cmd.ExecuteScalar();
@@ -238,7 +237,9 @@ namespace LoggingDemo
 		/// <summary>
 		/// Method to execute a query and return data.
 		/// For example, query DB log table, return data for date span,
-		/// abd write it to a log file.
+		/// and write it to a log file.
+		/// 
+		/// The DBReturnValue 
 		/// </summary>
 		/// <param name="cmd">SQL Command</param>
 		/// <param name="isSP">True if a stored procedure, false if not.</param>
@@ -328,6 +329,8 @@ namespace LoggingDemo
 							sqlParams.Clear();
 						}
 
+						// Since there may be out parameters or return values,
+						// they are captured here
 						foreach (SqlParameter sqlParam in sqlCmd.Parameters)
 						{
 							retVal.SQLParams.Add(new SqlParameter
@@ -374,6 +377,7 @@ namespace LoggingDemo
 			}
 			finally
 			{
+				// Do what Momma says - clean up the mess you make. :)
 				if (retDS != null)
 				{
 					retDS.Dispose();
@@ -499,6 +503,8 @@ namespace LoggingDemo
 							sqlParams.Clear();
 						}
 
+						// Since there may be out parameters or return values,
+						// they are captured here
 						foreach (SqlParameter sqlParam in sqlCmd.Parameters)
 						{
 							retVal.SQLParams.Add(new SqlParameter
@@ -545,6 +551,7 @@ namespace LoggingDemo
 			}
 			finally
 			{
+				// Do what your Momma taught you, and clean up your mess. :)
 				if (sqlCmd != null)
 				{
 					sqlCmd.Dispose();
